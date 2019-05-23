@@ -26,6 +26,7 @@ function build_env(){
     
     # Installing the serverless cli
     npm install -g serverless
+    serverless plugin install -n serverless-s3-sync
 }
 
 # You can also change these parameters but it's not required

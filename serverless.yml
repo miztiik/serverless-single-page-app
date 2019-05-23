@@ -4,19 +4,26 @@ service: serverless-single-page-app
 frameworkVersion: ">=1.2.0 <2.0.0"
 
 custom:
-  s3Bucket: spa-app
+  SPABucketName: spa-app-090
+  s3Sync:
+  - bucketName: ${self:custom.siteName}
+    localDir: static
 
 provider:
   name: aws
   runtime: nodejs8.10
+  memorySize: 128
+  stage: ${env:STAGE, 'dev'}
+  profile: default # AWS Profile name
+  region: ${env:REGION, 'us-east-1'}
 
 resources:
   Resources:
     ## Specifying the S3 Bucket
-    WebAppS3Bucket:
+    SPAS3Bucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: ${self:custom.s3Bucket}
+        BucketName: ${self:custom.SPABucketName}
         AccessControl: PublicRead
         WebsiteConfiguration:
           IndexDocument: index.html
@@ -26,7 +33,7 @@ resources:
       Type: AWS::S3::BucketPolicy
       Properties:
         Bucket:
-          Ref: WebAppS3Bucket
+          Ref: SPAS3Bucket
         PolicyDocument:
           Statement:
             - Sid: PublicReadGetObject
@@ -34,19 +41,19 @@ resources:
               Principal: "*"
               Action:
               - s3:GetObject
-              Resource: arn:aws:s3:::${self:custom.s3Bucket}/*
+              Resource: arn:aws:s3:::${self:custom.SPABucketName}/*
     ## Specifying the CloudFront Distribution to server your Web Application
     WebAppCloudFrontDistribution:
       Type: AWS::CloudFront::Distribution
       Properties:
         DistributionConfig:
           Origins:
-            - DomainName: ${self:custom.s3Bucket}.s3.amazonaws.com
+            - DomainName: ${self:custom.SPABucketName}.s3.amazonaws.com
               ## An identifier for the origin which must be unique within the distribution
-              Id: WebApp
+              Id: SPAWebApp
               ## In case you want to restrict the bucket access use S3OriginConfig and remove CustomOriginConfig
               S3OriginConfig:
-                OriginAccessIdentity: origin-access-identity/cloudfront/E127EXAMPLE51Z
+                OriginAccessIdentity: origin-access-identity/cloudfront/M151YSTIQUE16W
           Enabled: 'true'
           ## Uncomment the following section in case you are using a custom domain
           # Aliases:
@@ -68,7 +75,7 @@ resources:
               - POST
               - PUT
             ## The origin id defined above
-            TargetOriginId: WebApp
+            TargetOriginId: SPAWebApp
             ## Defining if and how the QueryString and Cookies are forwarded to the origin which in this case is S3
             ForwardedValues:
               QueryString: 'false'
