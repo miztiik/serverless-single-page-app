@@ -5,8 +5,9 @@ frameworkVersion: ">=1.2.0 <2.0.0"
 
 custom:
   SPABucketName: spa-app-090
+  SPAOAIId: E28YA2YIYO7BCH
   s3Sync:
-  - bucketName: ${self:custom.siteName}
+  - bucketName: ${self:custom.SPABucketName}
     localDir: static
 
 provider:
@@ -53,7 +54,7 @@ resources:
               Id: SPAWebApp
               ## In case you want to restrict the bucket access use S3OriginConfig and remove CustomOriginConfig
               S3OriginConfig:
-                OriginAccessIdentity: origin-access-identity/cloudfront/M151YSTIQUE16W
+                OriginAccessIdentity: origin-access-identity/cloudfront/${self:custom.SPAOAIId}
           Enabled: 'true'
           ## Uncomment the following section in case you are using a custom domain
           # Aliases:
