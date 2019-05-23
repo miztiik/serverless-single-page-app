@@ -15,11 +15,23 @@ PACKAGED_OUTPUT_TEMPLATE="${OUTPUT_DIR}/${STACK_NAME}-packaged-template.yaml"
 #----- End of user parameters  -----#
 
 
+function build_env(){
+    echo -e "\n ******************************"
+    echo -e " * Environment Build Initiated *"
+    echo -e " ******************************"
+
+    curl -sL https://rpm.nodesource.com/setup_12.x | bash -
+    sudo yum install -y nodejs gcc-c++ make
+    npm install -g npm
+    
+    # Installing the serverless cli
+    npm install -g serverless
+}
+
 # You can also change these parameters but it's not required
 # debugMODE="True"
 
 function pack_and_deploy() {
-    pack
     deploy
 }
 
@@ -48,15 +60,11 @@ function deploy() {
     echo -e " * Stack Deployment Initiated *"
     echo -e " ******************************"
     
-    aws cloudformation deploy \
-        --profile "${AWS_PROFILE}" \
-        --template-file "${PACKAGED_OUTPUT_TEMPLATE}" \
-        --stack-name "${STACK_NAME}" \
-        --tags Service="${SERVICE_NAME}" \
-        --capabilities CAPABILITY_IAM \
-        --region "${AWS_REGION}"
-        # --parameter-overrides \
-        #    debugMODE="${debugMODE}" \
+    # Installing the serverless cli
+    git clone https://github.com/miztiik/serverless-single-page-app.git
+    cd serverless-single-page-app
+    serverless deploy -v
+
     exit
 }
 
@@ -93,5 +101,7 @@ if [ $# -eq 0 ]; then
        _cancel_update_stack
         elif [ "$1" = "nuke" ]; then
          nuke_stack
+          elif [ "$1" = "build_env" ]; then
+           build_env
 fi
 

@@ -4,7 +4,7 @@ service: serverless-single-page-app
 frameworkVersion: ">=1.2.0 <2.0.0"
 
 custom:
-  s3Bucket: t-bkt-010
+  s3Bucket: spa-app
 
 provider:
   name: aws
