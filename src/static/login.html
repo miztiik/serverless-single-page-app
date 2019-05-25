@@ -31,7 +31,7 @@
         </label>
       </div>
       <button id="login" class="btn btn-lg btn-primary btn-block" type="button">Login</button>
-      <p class="mt-5 mb-3 text-muted">miztiik@github | &copy; 2018-2019</p>
+      <p class="mt-5 mb-3 text-muted">&copy; 2019-2020 | miztiik@github</p>
     </form>
   </body>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -47,7 +47,8 @@
       $.ajax
       ({
         type: "POST",
-        url: "api/login?_=" + (new Date()).getTime(),
+        //url: "login.html?_=" + (new Date()).getTime(),
+        url: "home.html",
         dataType: 'json',
         async: false,
         headers: {
@@ -59,7 +60,7 @@
         },
         success: function (data) {
           alert(JSON.stringify(data));
-          window.location.assign("./");
+          window.location.assign("home.html");
         },
         error: function (req, status, error) {
           alert(status);
