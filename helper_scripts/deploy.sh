@@ -6,7 +6,7 @@ set -e
 AWS_PROFILE="default"
 AWS_REGION="us-east-1"
 BUCKET_NAME="sam-templates-011" # bucket must exist in the SAME region the deployment is taking place
-SERVICE_NAME="cognito-authn-authz"
+SERVICE_NAME="serverless-single-page-app"
 TEMPLATE_NAME="${SERVICE_NAME}.yaml" # The CF Template should be the same name, If not update it.
 STACK_NAME="${SERVICE_NAME}-001"
 OUTPUT_DIR="./outputs"
@@ -33,6 +33,7 @@ function build_env(){
 # debugMODE="True"
 
 function pack_and_deploy() {
+    pack
     deploy
 }
 
@@ -61,11 +62,15 @@ function deploy() {
     echo -e " * Stack Deployment Initiated *"
     echo -e " ******************************"
     
-    # Installing the serverless cli
-    git clone https://github.com/miztiik/serverless-single-page-app.git
-    cd serverless-single-page-app
-    serverless deploy -v
-
+    aws cloudformation deploy \
+        --profile "${AWS_PROFILE}" \
+        --template-file "${PACKAGED_OUTPUT_TEMPLATE}" \
+        --stack-name "${STACK_NAME}" \
+        --tags Service="${SERVICE_NAME}" \
+        --capabilities CAPABILITY_IAM \
+        --region "${AWS_REGION}"
+        # --parameter-overrides \
+        #    debugMODE="${debugMODE}" \
     exit
 }
 
@@ -90,6 +95,10 @@ function _cancel_update_stack() {
     exit
 }
 
+function gen_random_str(){
+
+    cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-8} | head -n 1
+}
 
 # Check if we need to destroy the stack
 if [ $# -eq 0 ]; then
@@ -105,4 +114,3 @@ if [ $# -eq 0 ]; then
           elif [ "$1" = "build_env" ]; then
            build_env
 fi
-
