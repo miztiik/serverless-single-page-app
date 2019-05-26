@@ -65,6 +65,7 @@ Resources:
             - 
               EventType: viewer-request
               LambdaFunctionARN: !Ref viewerReqFunction.Version
+              # IncludeBody: true # At this moment this can only be set in Web console
         DefaultRootObject: index.html
         Enabled: true
         PriceClass: PriceClass_100

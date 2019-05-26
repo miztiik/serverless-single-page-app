@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-set -e
+#set -e
 set -x
 
 #################################################
 #         SET ENVIRONMENT VARAIABLES            #
 #################################################
-LOG_GROUP_NAME=${1:?log group name is not set}
-REGION=${2:?Region not set}
+
 
 function del_log_group(){
 aws logs describe-log-groups --query 'logGroups[*].logGroupName' --output table --region "$REGION" \
@@ -21,6 +20,8 @@ exit
 }
 
 function del_log_streams(){
+    LOG_GROUP_NAME=${1:?log group name is not set}
+    REGION=${2:?Region not set}
     LOG_STREAMS=$(
         aws logs describe-log-streams \
             --log-group-name ${LOG_GROUP_NAME} \
@@ -36,12 +37,15 @@ function del_log_streams(){
         printf "Delete stream ${name}"
         aws logs delete-log-stream --log-group-name ${LOG_GROUP_NAME} --log-stream-name ${name} --region ${REGION} && echo OK || echo Fail
     done
-
-    exit
 }
 
 
 # Begin Log Steam Deletion
 # del_log_streams
+
 del_log_streams /aws/lambda/us-east-1.serverless-single-page-app-001-dev-viewerReq eu-central-1
 del_log_streams /aws/lambda/us-east-1.serverless-single-page-app-001-dev-originResp eu-central-1
+del_log_streams /aws/lambda/us-east-1.serverless-single-page-app-001-dev-viewerReq eu-west-2
+del_log_streams /aws/lambda/us-east-1.serverless-single-page-app-001-dev-originResp eu-west-2
+del_log_streams /aws/lambda/us-east-1.serverless-single-page-app-001-dev-viewerReq eu-west-1
+del_log_streams /aws/lambda/us-east-1.serverless-single-page-app-001-dev-originResp eu-west-1

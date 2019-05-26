@@ -41,31 +41,34 @@
   <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script type="text/javascript">
     $("#login").click(function() {
-      let userId = $("input#inputUserId").val();
-      let password = $("input#inputPassword").val();
+      let userId = $("input#inputUserId").val().trim();
+      let password = $("input#inputPassword").val().trim();
 
-      $.ajax
-      ({
-        type: "POST",
-        //url: "login.html?_=" + (new Date()).getTime(),
-        url: "home.html",
-        dataType: 'json',
-        async: false,
-        headers: {
-          "Authorization" : "Basic " + btoa(userId + ":" + password)
-        },
-        data: {
-          "userId" : userId,
-          "pwd" : password
-        },
-        success: function (data) {
-          alert(JSON.stringify(data));
-          window.location.assign("home.html");
-        },
-        error: function (req, status, error) {
-          alert(status);
-        }
-      });
+      if(userId != "" && password != "") {
+        $.ajax ({
+          type: "POST",
+          //url: "login.html?_=" + (new Date()).getTime(),
+          url: "login.html",
+          //dataType: 'json',
+          async: false,
+          headers: {
+            "Authorization" : "Basic " + btoa(userId + ":" + password)
+          },
+          data: {
+            "userId" : userId,
+            "pwd" : password
+          },
+          success: function (res) {
+            window.location.assign("home.html");
+          },
+          error: function (req, status, error) {
+            alert("Status:"+status);
+          }
+        });
+		  }
+
+
+
     });
     
   </script>
